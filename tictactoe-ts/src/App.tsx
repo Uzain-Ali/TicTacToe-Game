@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Block from './Components/Block';
@@ -7,6 +7,7 @@ import { stat } from 'fs';
 function App() {
   const [state, setState] = useState(Array(9).fill(null));
   const [currentTurn, setCurrentTurn] = useState("X");
+  const [winner, setWinner] = useState(null);
 
   const checkWinner = (state: any[])=>{
     const win = [
@@ -21,31 +22,40 @@ function App() {
     ];
     for(let i=0; i<win.length; i++){
       const [a,b,c] = win[i];
-      if(state[a] !== null && state[a] === state[b] && state[a] === state[c]) return true;
+      if(state[a] !== null && state[a] === state[b] && state[a] === state[c]) return state[a];
     }
-    return false;
+    return null;
   }
 
   const handleBlockClick = (index:number)=>{
-    const stateCopy = Array.from(state);
-    if(stateCopy[index] !== null) return;
+    if(winner || state[index] !== null) return;
+    const stateCopy = [...state];
+
     stateCopy[index] = currentTurn;
+    setState(stateCopy);
 
     //Check wining
-    const win = checkWinner(stateCopy);
+    const winningPlayer = checkWinner(stateCopy);
 
-    if(win){
-      alert(`Hurray!! ${currentTurn} won the game`);
+    if(winningPlayer){
+      setWinner(winningPlayer);
     }
     setCurrentTurn(currentTurn === "X" ? "0" : "X");
-    setState(stateCopy);
   };
 
-  console.log(state);
+  const renderStatus = () => {
+    if (winner) {
+      return `Player ${winner} wins!`;
+    } else {
+      return `Current Turn: ${currentTurn}`;
+    }
+  };
 
 
   return (
     <div className='board'>
+      <h1>Tic Tac Toe!!</h1>
+      <div className='status'>{renderStatus()}</div>
       <div className='row'>
         <Block onClick={()=>handleBlockClick(0)} value={state[0]}/>
         <Block onClick={()=>handleBlockClick(1)} value={state[1]}/>
@@ -61,6 +71,11 @@ function App() {
         <Block onClick={()=>handleBlockClick(7)} value={state[7]}/>
         <Block onClick={()=>handleBlockClick(8)} value={state[8]}/>
       </div>
+      {winner && (
+        <div className="winnerMessage">
+          Hurray!! Player {winner} wins!
+        </div>
+      )}
     </div>
   );
 }

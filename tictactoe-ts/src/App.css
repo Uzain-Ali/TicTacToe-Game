@@ -18,5 +18,19 @@
 
 .board{
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;  
+  justify-content: center;
 }
 
+.board h1{
+  color: tomato;
+  font-style: italic;
+}
+
+.board .winnerMessage{
+    margin-top: 20px;
+    font-weight: 900;
+    font-size: larger;
+}
